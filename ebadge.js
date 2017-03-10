@@ -2,7 +2,7 @@ var iv="Ahbool\0\0"
 var key = 'dzxh0010';
 var mysql = require("mysql")
 var connection = mysql.createConnection({   
-	host     : '121.41.25.161',       //主机
+	host     : '127.0.0.1',       //主机
 	user     : 'smart',               //MySQL认证用户名
 	password : '12341234qwer',        //MySQL认证用户密码
 	port     : '33306'    ,              //端口号
@@ -40,6 +40,7 @@ var server = net.createServer(function(socket){
     certstr = MakeCertStr()
     certstrobj = JSON.parse(certstr)
     keystr =  certstrobj.value
+    certstr = '{"name" : "SERVER-AUTH-REQ" , "value" : "A17A312D3237C93D"}'
     socket.write(certstr);
     logInfo(0,'connect: ' + socket.remoteAddress + ':' + socket.remotePort+"=="+certstr)
     //超时事件
@@ -47,12 +48,13 @@ var server = net.createServer(function(socket){
         console.log('连接超时');
         logInfo(1,'连接超时')
         socket.end();
+        return
     });
   
     //接收到数据
     socket.on('data',function(data){
 
-        console.log('recv:' + data+typeof data)
+    console.log('recv:' + data+typeof data)
   //returnCertObj = eval('('+data+')')
   	var returnCertObj
     try{
@@ -63,7 +65,9 @@ var server = net.createServer(function(socket){
 	   	if (returnCertObj ==  null) {
 	    	console.log('接收到非json数据：' + data)
 	    	logInfo(1,'接收到非json数据：' + data)
-	    	socket.end
+	    	socket.end()
+	    	return
+	    	 
 	    }
 	   	
     }
@@ -71,7 +75,8 @@ var server = net.createServer(function(socket){
 	    if (returnCertObj.value.auth != cryptStr(keystr)) {
 	        	console.log('接收到auth数据不符合：' + data)
 	        	logInfo(1,'接收到auth数据不符合：' + data)
-	        	socket.end
+	        	socket.end()
+	        	 
 	    }
 	    datadeviceobj={}
 	    datadeviceobj.name = returnCertObj.value.pname
@@ -109,7 +114,7 @@ var server = net.createServer(function(socket){
 		    socket.write(JSON.stringify(okstrobj))  
     	 }
     	
-    	
+    	 
     	
     	
     }
@@ -188,7 +193,7 @@ function logInfo(ltype,linfo){
 	var  logSql = 'INSERT INTO log_tb(type,info,state,ltime) VALUES(?,?,?,?)';
 	var d = new Date()
 	var timestr=""
-	timestr = d.getFullYear()+"-"+d.getMonth()+"-"+d.getDate()+" "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()
+	timestr = d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()+" "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()
 	var  logSql_Params = [ltype,linfo,0, timestr   ];
 	
 	connection.query(logSql ,logSql_Params,function (err, result) {
@@ -264,3 +269,8 @@ function cryptStr(plainText){
  
 }
 //connection.end()
+process.on('SIGINT', () => {
+  console.log('Received SIGINT.  to exit.');
+  logInfo(1,'程序退出')
+  process.exit()
+});

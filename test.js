@@ -1,3 +1,24 @@
+var users = `[
+    {name: 'a', age: 14, sex: 0},
+    {name: 'b', age: 15, sex: 0},
+    {name: 'c', age: 16, sex: 1}
+]`
+/*
+aaa = JSON.stringify(users);
+console.log(aaa)
+
+
+
+var jsonstr = "{a:1}"
+eval("(" + jsonstr + ")")*/
+
+bb = eval("(" + users + ")")
+//cc = JSON.parse(users)
+//aaa = bb.toJSON() 
+console.log(JSON.stringify(bb))
+a1 = console.log(bb)
+console.log(a1,typeof a1)
+
 /*
 var crypto = require('crypto');
 var key = 'dzxh0010';

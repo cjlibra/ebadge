@@ -1,6 +1,15 @@
+var crypto = require('crypto')  
+
+function md5(plainstr){  
+	var str = plainstr
+    var decipher = crypto.createHash('md5')  
+ 
+    return decipher.update(str).digest('hex')  
+}  
+
 var mysql = require("mysql")
 var connection = mysql.createConnection({   
-	host     : '121.41.25.161',       //主机
+	host     : '127.0.0.1',       //主机
 	user     : 'smart',               //MySQL认证用户名
 	password : '12341234qwer',        //MySQL认证用户密码
 	port     : '33306'    ,              //端口号
@@ -42,18 +51,12 @@ function logInfo(ltype,linfo){
 logInfo(0,"上传数据连接本地数据库成功")
 
 
-connection.query('select * from io_tb where up = 0', function(err, rows, fields) {
-    if (err) throw err;
-    console.log('查询结果为: ', rows);
-    for(var idx in rows){
-       rows[idx]
-    }
-});
-
-
 var reqData={
- id:'111'
-};
+}
+
+
+
+
  
 //http://api.yudianedu.cn/v3/web/Rest/badge/receive
 var post_options = {
@@ -82,5 +85,15 @@ var post_options = {
   });
  
   // post the data
-  post_req.write(reqData);
+  connection.query('select * from io_tb where up = 0', function(err, rows, fields) {
+    if (err) throw err;
+    console.log('查询结果为: ', rows);
+    for(var idx in rows){
+       reqData = rows[idx]
+       plainstr = "id="+reqData.id+"&status="+reqData.state+"&time="+reqData.ctime+"&key=yudianedutest"
+       reqData.sign = md5(plainstr)
+       post_req.write(reqData);
+    }
+});
+ 
   post_req.end();
