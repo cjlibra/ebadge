@@ -1,4 +1,4 @@
-var users = `[
+ var users = `[
     {name: 'a', age: 14, sex: 0},
     {name: 'b', age: 15, sex: 0},
     {name: 'c', age: 16, sex: 1}
